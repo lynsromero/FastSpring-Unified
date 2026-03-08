@@ -1,0 +1,45 @@
+/* 1. Reset the Label: Stop it from taking up the whole line and floating */
+ul.payment_methods li.payment_method_fastspring_card label {
+    padding-bottom: 0;
+    padding-right: 0;
+    padding-top: 0;
+}
+
+/* 2. The Container: Space it out from the text */
+.fs-card-inline-icons-container {
+    display: inline-block;
+    float: right;
+}
+
+li.payment_method_fastspring_card .fs-card-inline-icons-container img.fs-inline-icon{
+    display: inline;
+    float: none;
+    height: 26px;
+    max-height: 26px;
+    max-width: 43px;
+    width: 43px;
+}
+
+
+/* 4. Remove any existing clearfixes that might be pushing the row down */
+ul.payment_methods label[for="payment_method_fastspring_card"]::after {
+    display: none !important;
+}
+
+/* 5. Clean up other FS icons (PayPal, etc.) */
+img.fastspring-icon {
+    vertical-align: middle;
+    display: inline-block;
+    float: right;
+}
+
+/* 6. Remove any legacy clear-fixes that might push content down */
+ul.payment_methods label[for="payment_method_fastspring_card"]::after {
+    display: none !important;
+}
+
+.woocommerce-checkout #payment ul.payment_methods li img.fastspring-icon {
+    max-width: 50px !important;
+    padding-left: 3px;
+    margin: 0;
+}
