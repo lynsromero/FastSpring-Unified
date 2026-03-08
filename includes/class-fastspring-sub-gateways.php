@@ -25,6 +25,7 @@ add_action('plugins_loaded', function () {
       $stored_default_title = isset($this->default_title) ? $this->default_title : '';
       $stored_method_desc = isset($this->method_description) ? $this->method_description : '';
 
+
       $this->has_fields = true;
       parent::__construct();
 
@@ -62,7 +63,7 @@ add_action('plugins_loaded', function () {
       // Fallback for title
       $this->title = $this->get_option('title');
       if (empty($this->title)) {
-        $this->title = $this->default_title;
+        $this->title = !empty($stored_default_title) ? $stored_default_title : $this->default_title;
       }
 
       $this->description = $this->get_option('description', '');
@@ -221,8 +222,8 @@ add_action('plugins_loaded', function () {
       }
 
       // 2. Enqueue Style (Use filemtime to force refresh cache)
-      $style_path = plugin_dir_path(__FILE__) . 'assets/css/style.css';
-      $style_url = plugin_dir_url(__FILE__) . 'assets/css/style.css';
+      $style_path = plugin_dir_path(dirname(__FILE__)) . 'assets/css/style.css';
+      $style_url = plugin_dir_url(dirname(__FILE__)) . 'assets/css/style.css';
 
       wp_enqueue_style(
         'fs-split-gateways-style',

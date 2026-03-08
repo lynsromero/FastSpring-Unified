@@ -4,7 +4,7 @@
  * Description: Separate the methods to thake the control of the FastSpring payment gateway.
  * Author: 
  * Author URI: 
- * Version: 2.2.7
+ * Version: 2.2.8
  * Requires at least: 6.0
  * Requires PHP: 8.0
  *
