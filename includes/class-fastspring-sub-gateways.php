@@ -47,16 +47,15 @@ add_action('plugins_loaded', function () {
       $saved_settings = get_option('woocommerce_' . $this->id . '_settings', array());
       $is_already_enabled = (isset($saved_settings['enabled']) && $saved_settings['enabled'] === 'yes');
 
-      // 2. Check if we are currently SAVING this specific gateway
+      // 2. Check if currently SAVING this specific gateway
       $is_saving_this_gateway = isset($_POST['woocommerce_' . $this->id . '_enabled']);
       $current_section = isset($_GET['section']) ? sanitize_text_field($_GET['section']) : '';
 
       if ($current_section === $this->id || $is_saving_this_gateway) {
-        // We are actually editing/saving this specific gateway, so load the new value
+        // Editing/saving this specific gateway, so load the new value
         $this->enabled = $this->get_option('enabled', 'no');
       } else {
-        // We are saving the MAIN settings or something else. 
-        // DO NOT let it disable; keep the status from the database.
+        // Saving the MAIN settings or something else. 
         $this->enabled = $is_already_enabled ? 'yes' : 'no';
       }
 
@@ -482,109 +481,25 @@ add_filter('woocommerce_get_sections_checkout', function ($sections) {
 
 // 5. JS OVERRIDE FOR SHORTCODE CHECKOUT
 add_action('wp_enqueue_scripts', function () {
-  // Wait until the parent script is enqueued, then override it to bypass its minified functions
-  if (wp_script_is('woocommerce_fastspring', 'enqueued') || wp_script_is('woocommerce_fastspring', 'registered')) {
+    if (is_checkout()) {
+        // 1. Remove the original plugin's script
+        wp_dequeue_script('woocommerce_fastspring');
+        wp_deregister_script('woocommerce_fastspring');
 
-    // Remove the parent's enqueue completely
-    wp_dequeue_script('woocommerce_fastspring');
-    wp_deregister_script('woocommerce_fastspring');
+        // 2. Register your NEW JS file
+        $js_url = plugin_dir_url(__FILE__) . 'assets/js/fs-split-gateways.js';
+        wp_register_script('woocommerce_fastspring_custom', $js_url, ['jquery', 'fastspring'], '2.3.1', true);
 
-    // Re-add our customized version under a new handle so we can cleanly localize it
-    wp_register_script('woocommerce_fastspring_custom', '', ['jquery', 'fastspring'], '1.2.2', true);
+        // 3. Localize the parameters exactly like the original plugin
+        $fastspring_params = array(
+            'ajax_url' => WC_AJAX::get_endpoint('%%endpoint%%'),
+            'nonce' => array(
+                'receipt' => wp_create_nonce('wc-fastspring-receipt'),
+            ),
+        );
+        wp_localize_script('woocommerce_fastspring_custom', 'woocommerce_fastspring_params', apply_filters('woocommerce_fastspring_params', $fastspring_params));
 
-    // Re-inject the localized parameters exactly as the parent plugin normally does it
-    $fastspring_params = array(
-      'ajax_url' => WC_AJAX::get_endpoint('%%endpoint%%'),
-      'nonce' => array(
-        'receipt' => wp_create_nonce('wc-fastspring-receipt'),
-      ),
-    );
-    wp_localize_script('woocommerce_fastspring_custom', 'woocommerce_fastspring_params', apply_filters('woocommerce_fastspring_params', $fastspring_params));
-
-    // Re-add our customized Javascript codebase
-    $script = "
-          /* Customized FastSpring Checkout JS for Split Gateways */
-          var checkoutForm = jQuery('form.checkout'); 
-          function setLoadingDone() { checkoutForm.removeClass('processing').unblock(); } 
-          function setLoadingOn() { checkoutForm.addClass('processing').block({message: null, overlayCSS: {background: '#fff', opacity: 0.6}}); } 
-          function getAjaxURL(e) { return woocommerce_fastspring_params.ajax_url.toString().replace('%%endpoint%%', 'wc_fastspring_' + e); } 
-          
-          window.fastspringBeforeRequestHandler = function() { setLoadingDone(); };
-          window.dataCallbackFunction = function(data) { console.log('FastSpring Data:', data); };
-          window.errorCallback = function(code, string) { 
-              console.error('FastSpring Error: ', code, string);
-              submitError('FastSpring API Error: ' + string + ' (' + code + ')');
-          };
-          window.fastspringPopupCloseHandler = function(e) { 
-              if (e && e.reference) {
-                  window.requestPaymentCompletionUrl(e || {}, function(err, o) { if (!err) { window.location = o.redirect_url; } }); 
-              }
-          }; 
-          window.requestPaymentCompletionUrl = function(e, o) { 
-              e.security = woocommerce_fastspring_params.nonce.receipt;
-              jQuery.ajax({type: 'POST', dataType: 'json', data: JSON.stringify(e), url: getAjaxURL('get_receipt'), success: function(e) { o(null, e); }, error: function(e, r, t) { o(e.responseText); }}); 
-          }; 
-          function launchFastSpring(e) { 
-              console.log('Pushing secure payload to FastSpring: ', e);
-              
-              var methodVal = jQuery('.woocommerce-checkout input[name=\"payment_method\"]:checked').val();
-              if (methodVal && methodVal.indexOf('fastspring_') === 0) {
-                  var mappedMethod = '';
-                  switch (methodVal) {
-                      case 'fastspring_paypal': mappedMethod = 'paypal'; break;
-                      case 'fastspring_card': mappedMethod = 'card'; break;
-                      case 'fastspring_amazon': mappedMethod = 'amazonpay'; break;
-                      case 'fastspring_wire': mappedMethod = 'wire'; break;
-                      case 'fastspring_googlepay': mappedMethod = 'googlepay'; break;
-                  }
-                  if (mappedMethod) {
-                      fastspring.builder.push({
-                          'paymentMethod': mappedMethod
-                      });
-                  }
-              }
-
-              fastspring.builder.secure(e.payload, e.key); 
-              fastspring.builder.checkout(); 
-          } 
-          function setOrder(e) { 
-              jQuery.ajax({type: 'POST', url: wc_checkout_params.checkout_url, data: checkoutForm.serialize(), dataType: 'json', success: function(o) { 
-                  try { 
-                      if (o.result !== 'success') throw o.result === 'failure' ? new Error('Result failure') : new Error('Invalid response'); 
-                      e(null, o); 
-                  } catch (err) { 
-                      if (o.reload === true) return window.location.reload(); 
-                      if (o.refresh === true) jQuery(document.body).trigger('update_checkout');
-                      o.messages ? submitError(o.messages) : submitError('<div class=\"woocommerce-error\">' + wc_checkout_params.i18n_checkout_error + '</div>'); 
-                  } 
-              }, error: function(jqXHR, textStatus, errorThrown) { 
-                  submitError('<div class=\"woocommerce-error\">' + errorThrown + '</div>'); 
-              }}); 
-          } 
-          function doSubmit() { setLoadingOn(); setOrder(function(err, result) { if (!err) { launchFastSpring(result.session); } }); } 
-          function submitError(e) { 
-              setLoadingDone(); 
-              jQuery('.woocommerce-NoticeGroup-checkout, .woocommerce-error, .woocommerce-message').remove(); 
-              checkoutForm.prepend('<div class=\"woocommerce-NoticeGroup woocommerce-NoticeGroup-checkout\">' + e + '</div>'); 
-              checkoutForm.removeClass('processing'); 
-              checkoutForm.find('.input-text, select, input:checkbox').trigger('validate').blur(); 
-              jQuery('html, body').animate({scrollTop: jQuery('form.checkout').offset().top - 100}, 1e3); 
-              jQuery(document.body).trigger('checkout_error'); 
-          } 
-          function isFastSpringSelected() { 
-              var method = jQuery('.woocommerce-checkout input[name=\"payment_method\"]:checked').val();
-              return method && method.indexOf('fastspring') === 0;
-          }
-          checkoutForm.on('checkout_place_order', function() { if (isFastSpringSelected()) { doSubmit(); return false; } });
-          
-          checkoutForm.on('change', 'input[name=\"payment_method\"]', function() {
-              if (isFastSpringSelected()) {
-                 checkoutForm.submit();
-              }
-          });
-      ";
-
-    wp_add_inline_script('woocommerce_fastspring_custom', $script);
-    wp_enqueue_script('woocommerce_fastspring_custom');
-  }
+        // 4. Fire it up
+        wp_enqueue_script('woocommerce_fastspring_custom');
+    }
 }, 99);
