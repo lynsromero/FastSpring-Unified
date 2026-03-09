@@ -487,7 +487,7 @@ add_action('wp_enqueue_scripts', function () {
         wp_deregister_script('woocommerce_fastspring');
 
         // 2. Register your NEW JS file
-        $js_url = plugin_dir_url(__FILE__) . 'assets/js/fs-split-gateways.js';
+        $js_url = plugin_dir_url(dirname(__FILE__)) . 'assets/js/fs-split-gateways.js';
         wp_register_script('woocommerce_fastspring_custom', $js_url, ['jquery', 'fastspring'], '2.3.1', true);
 
         // 3. Localize the parameters exactly like the original plugin
