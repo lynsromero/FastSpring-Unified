@@ -1,6 +1,6 @@
 # FastSpring Unified
 
-A WordPress/WooCommerce plugin that provides FastSpring payment gateway integration with support for multiple payment methods.
+A WordPress/WooCommerce plugin that provides FastSpring payment gateway integration with support for multiple payment methods. With this you can "Split Your Fastspring From One Option into Multiple Options"
 
 ## Description
 
