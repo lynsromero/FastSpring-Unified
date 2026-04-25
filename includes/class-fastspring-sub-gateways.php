@@ -1,6 +1,6 @@
 <?php
 /**
- * FastSpring Split Gateways Logic Module
+ * FastSpring Split Gateways Logic
  * Part of the FastSpring Unified Plugin
  */
 

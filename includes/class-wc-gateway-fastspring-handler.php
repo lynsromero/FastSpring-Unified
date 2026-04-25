@@ -3,7 +3,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-// Polyfill for nginx
+// Poly-fill for nginx
 if (!function_exists('getallheaders')) {
     function getallheaders()
     {
@@ -26,11 +26,11 @@ if (!function_exists('getallheaders')) {
 class WC_Gateway_FastSpring_Handler
 {
 
-  /**
-   * Gateway options
-   *
-   * @var array FastSpring gateway options
-   */
+    /**
+     * Gateway options
+     *
+     * @var array FastSpring gateway options
+     */
     protected static $settings;
 
     /**
@@ -58,7 +58,7 @@ class WC_Gateway_FastSpring_Handler
      */
     public static function set_settings()
     {
-        self::$settings  = get_option('woocommerce_fastspring_settings', array());
+        self::$settings = get_option('woocommerce_fastspring_settings', array());
     }
 
     /**
@@ -75,11 +75,12 @@ class WC_Gateway_FastSpring_Handler
 
         $context = stream_context_create(array(
             'http' => array(
-              'user_agent' => 'Mozilla/5.0', // Not important what it is but must be set
-              'header' => "Authorization: Basic " . base64_encode(
-                  self::get_setting('api_username') . ':' . self::get_setting('api_password')
-              ),
-            )));
+                'user_agent' => 'Mozilla/5.0', // Not important what it is but must be set
+                'header' => "Authorization: Basic " . base64_encode(
+                    self::get_setting('api_username') . ':' . self::get_setting('api_password')
+                ),
+            )
+        ));
 
         $data = @json_decode(file_get_contents($url, false, $context));
 
@@ -164,7 +165,7 @@ class WC_Gateway_FastSpring_Handler
         }
 
         $filtered = apply_filters('woocommerce_get_return_url', $return_url, $order);
-        
+
         self::log(sprintf('Final filtered receipt URL set to %s', $filtered));
 
         return $filtered;
@@ -240,33 +241,33 @@ class WC_Gateway_FastSpring_Handler
             switch ($payload->type) {
 
                 case 'order.completed':
-                  $this->handle_webhook_request_order_completed($payload);
-                  break;
+                    $this->handle_webhook_request_order_completed($payload);
+                    break;
 
                 case 'return.created':
-                  $this->handle_webhook_request_order_refunded($payload);
-                  break;
+                    $this->handle_webhook_request_order_refunded($payload);
+                    break;
 
                 case 'subscription.canceled':
-                  $this->handle_webhook_request_subscription_canceled($payload);
-                  break;
+                    $this->handle_webhook_request_subscription_canceled($payload);
+                    break;
 
                 case 'subscription.deactivated':
-                  $this->handle_webhook_request_subscription_deactivate($payload);
-                  break;
+                    $this->handle_webhook_request_subscription_deactivate($payload);
+                    break;
 
                 case 'subscription.activated':
-                  $this->handle_webhook_request_subscription_activate($payload);
-                  break;
+                    $this->handle_webhook_request_subscription_activate($payload);
+                    break;
 
                 case 'subscription.updated':
                 //$this->handle_webhook_request_subscription_canceled($payload);
                 //break;
 
                 default:
-                  $this->log(sprintf('No webhook handler found for %s', $payload->type));
-                  break;
-                }
+                    $this->log(sprintf('No webhook handler found for %s', $payload->type));
+                    break;
+            }
 
             $this->log(json_encode($payload));
             return wp_send_json_success();

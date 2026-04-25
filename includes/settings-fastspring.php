@@ -1,10 +1,10 @@
 <?php
 if (!defined('ABSPATH')) {
-    exit;
+  exit;
 }
 
 return apply_filters(
-    'woocommerce-gateway-fastspring_settings',
+  'woocommerce-gateway-fastspring_settings',
 
   array(
     'enabled' => array(
@@ -32,9 +32,9 @@ return apply_filters(
       'title' => __('Payment Icons', 'woocommerce-gateway-fastspring'),
       'type' => 'multiselect',
       'description' => __('Select the payment method icons to show.', 'woocommerce-gateway-fastspring'),
-      'default' => array( 'paypal', 'visa', 'mastercard', 'amex' ),
+      'default' => array('paypal', 'visa', 'mastercard', 'amex'),
       'desc_tip' => false,
-      'class'       => 'wc-enhanced-select',
+      'class' => 'wc-enhanced-select',
       'options' => array(
         'paypal' => 'paypal',
         'visa' => 'visa',
@@ -54,7 +54,7 @@ return apply_filters(
       'label' => __('Enable Test Mode', 'woocommerce-gateway-fastspring'),
       'type' => 'checkbox',
       'description' => __('Places the payment gateway in test mode. In this mode, you can use the card numbers provided in the test panel of the FastSpring dashboard. Please check the documentation "<a target="_blank" href="http://docs.fastspring.com/activity-events-orders-and-subscriptions/test-orders">Testing Orders</a>" for more information.', 'woocommerce-gateway-fastspring'),
-      'default' =>  'no',
+      'default' => 'no',
       'desc_tip' => false,
     ),
     'logging' => array(
@@ -62,7 +62,7 @@ return apply_filters(
       'label' => __('Log debug messages', 'woocommerce-gateway-fastspring'),
       'type' => 'checkbox',
       'description' => __('Save debug messages to the WooCommerce System Status log.', 'woocommerce-gateway-fastspring'),
-      'default' =>  'no',
+      'default' => 'no',
     ),
     'storefront_path' => array(
       'title' => __('Storefront', 'woocommerce-gateway-fastspring'),
@@ -109,7 +109,7 @@ return apply_filters(
     'api_username' => array(
       'title' => __('API Username', 'woocommerce-gateway-fastspring'),
       'type' => 'text',
-      'description' => __('Your FastSpring API username.', 'woocommerce-gateway-fastspring'),
+      'description' => __('Your FastSpring API Username.', 'woocommerce-gateway-fastspring'),
       'desc_tip' => false,
     ),
     'api_password' => array(

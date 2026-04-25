@@ -6,7 +6,7 @@ if (!defined('ABSPATH')) {
 include_once dirname(__FILE__) . '/class-wc-gateway-fastspring-builder.php';
 
 /**
- * WC_Gateway_FastSpring class.
+ * WC_Gateway_FastSpring.
  *
  * @extends WC_Payment_Gateway
  */
