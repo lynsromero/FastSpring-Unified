@@ -1,14 +1,22 @@
 <?php
-/*
- * Plugin Name: FastSpring Unified
- * Description: Separate the methods to thake the control of the FastSpring payment gateway.
- * Author:Lyns Romero
- * Author URI: 
- * Version: 2.3.0
+/**
+ * Plugin Name:       FastSpring Split Gateways
+ * Plugin URI:        https://wordpress.org/plugins/fastspring-split-gateways/
+ * Description:       Separate the payment methods to take full control of the FastSpring payment gateway in WooCommerce.
+ * Version:           1.0.0
+ * Author:            TIC LTD
+ * Author URI:        https://tic.com.bd/
+ * License:           GPLv2 or later
+ * License URI:       http://www.gnu.org/licenses/gpl-2.0.html
+ * Text Domain:       fastspring-split-gateways
+ * Domain Path:       /languages
  * Requires at least: 6.0
- * Requires PHP: 8.0
- *
+ * Requires PHP:      8.0
+ * Developed by:      Al Ramim (lynsromero)
+ * Developer URI:     https://github.com/lynsromero
  */
+
+// Exit if accessed directly.
 
 if (!defined('ABSPATH')) {
     exit;
@@ -18,16 +26,16 @@ if (!defined('ABSPATH')) {
 /**
  * Required minimums and constants
  */
-define('WC_FASTSPRING_VERSION', '2.3.0');
-define('WC_FASTSPRING_SCRIPT', 'https://d1f8f9xcsvx3ha.cloudfront.net/sbl/0.8.3/fastspring-builder.min.js');
-define('WC_FASTSPRING_MIN_PHP_VER', '5.6.0');
-define('WC_FASTSPRING_MIN_WC_VER', '3.0.0');
-define('WC_FASTSPRING_MAIN_FILE', __FILE__);
-define('WC_FASTSPRING_PLUGIN_URL', plugins_url('', __FILE__));
+define('FSSG_WC_FASTSPRING_VERSION', '1.0.0');
+define('FSSG_WC_FASTSPRING_SCRIPT', 'https://d1f8f9xcsvx3ha.cloudfront.net/sbl/0.8.3/fastspring-builder.min.js');
+define('FSSG_WC_FASTSPRING_MIN_PHP_VER', '5.6.0');
+define('FSSG_WC_FASTSPRING_MIN_WC_VER', '3.0.0');
+define('FSSG_WC_FASTSPRING_MAIN_FILE', __FILE__);
+define('FSSG_WC_FASTSPRING_PLUGIN_URL', plugins_url('', __FILE__));
 
-if (!class_exists('WC_FastSpring')):
+if (!class_exists('fssg_WC_FastSpring')):
 
-    class WC_FastSpring
+    class fssg_WC_FastSpring
     {
 
         /**
@@ -125,8 +133,8 @@ if (!class_exists('WC_FastSpring')):
             $path = self::get_setting('storefront_path');
             return self::get_setting('testmode')
                 ? (strrpos($path, 'test.onfastspring.com')
-                    ? $path
-                    : str_replace('onfastspring.com', 'test.onfastspring.com', $path))
+                ? $path
+                : str_replace('onfastspring.com', 'test.onfastspring.com', $path))
                 : str_replace('test.onfastspring.com', 'onfastspring.com', $path);
         }
 
@@ -141,29 +149,29 @@ if (!class_exists('WC_FastSpring')):
         {
             if ('fastspring' === $handle) {
                 $debug = defined('SCRIPT_DEBUG') && SCRIPT_DEBUG ? 'true' : 'false';
-                return str_replace(' src', ' id="fsc-api" data-storefront="' . $this->get_storefront_path() . '" data-before-requests-callback="fastspringBeforeRequestHandler" data-access-key="' . self::get_setting('access_key') . '" ' . ($debug ? 'data-debug="true" data-test="' . (self::get_setting('testmode') ? 'yes' : 'no') . '" data-version="' . WC_FASTSPRING_VERSION . '" data-data-callback="dataCallbackFunction" data-error-callback="errorCallback"' : '') . ' data-popup-closed="fastspringPopupCloseHandler" src', $tag);
+                return str_replace(' src', ' id="fsc-api" data-storefront="' . $this->get_storefront_path() . '" data-before-requests-callback="fastspringBeforeRequestHandler" data-access-key="' . self::get_setting('access_key') . '" ' . ($debug ? 'data-debug="true" data-test="' . (self::get_setting('testmode') ? 'yes' : 'no') . '" data-version="' . FSSG_WC_FASTSPRING_VERSION . '" data-data-callback="dataCallbackFunction" data-error-callback="errorCallback"' : '') . ' data-popup-closed="fastspringPopupCloseHandler" src', $tag);
             }
             return $tag;
 
-            // Possible FastSpring script tag values
-            /*
-              id="fsc-api"
-              src="https://d1f8f9xcsvx3ha.cloudfront.net/sbl/0.7.3/fastspring-builder.min.js" type="text/javascript"
-                data-storefront="vendor.test.onfastspring.com"
-              data-data-callback="dataCallbackFunction"
-              data-error-callback="errorCallback"
-              data-before-requests-callback="beforeRequestsCallbackFunction"
-              data-after-requests-callback="afterRequestsCallbackFunction"
-              data-before-markup-callback="beforeMarkupCallbackFunction"
-              data-after-markup-callback="afterMarkupCallbackFunction"
-              data-decorate-callback="decorateURLFunction"
-              data-popup-event-received="popupEventReceived"
-              data-popup-webhook-received="popupWebhookReceived"
-              data-popup-closed="onPopupClose"
-              data-access-key=".. access key .."
-              data-debug="true"
-              data-continuous="true"
-            */
+        // Possible FastSpring script tag values
+        /*
+         id="fsc-api"
+         src="https://d1f8f9xcsvx3ha.cloudfront.net/sbl/0.7.3/fastspring-builder.min.js" type="text/javascript"
+         data-storefront="vendor.test.onfastspring.com"
+         data-data-callback="dataCallbackFunction"
+         data-error-callback="errorCallback"
+         data-before-requests-callback="beforeRequestsCallbackFunction"
+         data-after-requests-callback="afterRequestsCallbackFunction"
+         data-before-markup-callback="beforeMarkupCallbackFunction"
+         data-after-markup-callback="afterMarkupCallbackFunction"
+         data-decorate-callback="decorateURLFunction"
+         data-popup-event-received="popupEventReceived"
+         data-popup-webhook-received="popupWebhookReceived"
+         data-popup-closed="onPopupClose"
+         data-access-key=".. access key .."
+         data-debug="true"
+         data-continuous="true"
+         */
         }
 
         /**
@@ -178,7 +186,8 @@ if (!class_exists('WC_FastSpring')):
 
             if (!class_exists('WC_Payment_Gateway')) {
                 return;
-            } else {
+            }
+            else {
                 include_once dirname(__FILE__) . '/includes/class-wc-gateway-fastspring.php';
                 include_once dirname(__FILE__) . '/includes/class-fastspring-sub-gateways.php';
             }
@@ -206,7 +215,7 @@ if (!class_exists('WC_FastSpring')):
                 unset($fields['billing']['billing_country']);
                 unset($fields['billing']['billing_state']);
                 unset($fields['billing']['billing_company']);
-                //unset($fields['billing']['billing_phone']);
+            //unset($fields['billing']['billing_phone']);
             }
             return $fields;
         }
@@ -244,7 +253,7 @@ if (!class_exists('WC_FastSpring')):
          */
         public function check_environment()
         {
-            if (!defined('IFRAME_REQUEST') && (WC_FASTSPRING_VERSION !== get_option('wc_fastspring_version'))) {
+            if (!defined('IFRAME_REQUEST') && (FSSG_WC_FASTSPRING_VERSION !== get_option('FSSG_WC_FASTSPRING_VERSION'))) {
                 $this->install();
 
                 do_action('woocommerce_fastspring_updated');
@@ -271,8 +280,8 @@ if (!class_exists('WC_FastSpring')):
          */
         private static function _update_plugin_version()
         {
-            delete_option('wc_fastspring_version');
-            update_option('wc_fastspring_version', WC_FASTSPRING_VERSION);
+            delete_option('FSSG_WC_FASTSPRING_VERSION');
+            update_option('FSSG_WC_FASTSPRING_VERSION', FSSG_WC_FASTSPRING_VERSION);
 
             return true;
         }
@@ -282,8 +291,8 @@ if (!class_exists('WC_FastSpring')):
          */
         public function install()
         {
-            if (!defined('WC_FASTSPRING_INSTALLING')) {
-                define('WC_FASTSPRING_INSTALLING', true);
+            if (!defined('FSSG_WC_FASTSPRING_INSTALLING')) {
+                define('FSSG_WC_FASTSPRING_INSTALLING', true);
             }
 
             $this->_update_plugin_version();
@@ -295,20 +304,20 @@ if (!class_exists('WC_FastSpring')):
          */
         public static function get_environment_warning()
         {
-            if (version_compare(phpversion(), WC_FASTSPRING_MIN_PHP_VER, '<')) {
+            if (version_compare(phpversion(), FSSG_WC_FASTSPRING_MIN_PHP_VER, '<')) {
                 $message = __('WooCommerce FastSpring - The minimum PHP version required for this plugin is %1$s. You are running %2$s.', 'woocommerce-gateway-fastspring');
 
-                return sprintf($message, WC_FASTSPRING_MIN_PHP_VER, phpversion());
+                return sprintf($message, FSSG_WC_FASTSPRING_MIN_PHP_VER, phpversion());
             }
 
             if (!defined('WC_VERSION')) {
                 return __('WooCommerce FastSpring requires WooCommerce to be activated to work.', 'woocommerce-gateway-fastspring');
             }
 
-            if (version_compare(WC_VERSION, WC_FASTSPRING_MIN_WC_VER, '<')) {
+            if (version_compare(WC_VERSION, FSSG_WC_FASTSPRING_MIN_WC_VER, '<')) {
                 $message = __('WooCommerce FastSpring - The minimum WooCommerce version required for this plugin is %1$s. You are running %2$s.', 'woocommerce-gateway-fastspring');
 
-                return sprintf($message, WC_FASTSPRING_MIN_WC_VER, WC_VERSION);
+                return sprintf($message, FSSG_WC_FASTSPRING_MIN_WC_VER, WC_VERSION);
             }
 
             return false;
@@ -343,7 +352,7 @@ if (!class_exists('WC_FastSpring')):
          */
         public function admin_notices()
         {
-            foreach ((array) $this->notices as $notice_key => $notice) {
+            foreach ((array)$this->notices as $notice_key => $notice) {
                 echo "<div class='" . esc_attr($notice['class']) . "'><p>";
                 echo wp_kses($notice['message'], array('a' => array('href' => array())));
                 echo '</p></div>';
@@ -355,12 +364,12 @@ if (!class_exists('WC_FastSpring')):
          */
         public function add_gateways($methods)
         {
-            $methods[] = 'WC_Gateway_FastSpring';
-            $methods[] = 'WC_Gateway_FastSpring_CreditCard';
-            $methods[] = 'WC_Gateway_FastSpring_PayPal';
-            $methods[] = 'WC_Gateway_FastSpring_AmazonPay';
-            $methods[] = 'WC_Gateway_FastSpring_GooglePay';
-            $methods[] = 'WC_Gateway_FastSpring_WireTransfer';
+            $methods[] = 'fssg_WC_Gateway_FastSpring';
+            $methods[] = 'fssg_WC_Gateway_FastSpring_CreditCard';
+            $methods[] = 'fssg_WC_Gateway_FastSpring_PayPal';
+            $methods[] = 'fssg_WC_Gateway_FastSpring_Amazon';
+            $methods[] = 'fssg_WC_Gateway_FastSpring_GooglePay';
+            $methods[] = 'fssg_WC_Gateway_FastSpring_Wire';
             return $methods;
         }
 
@@ -387,6 +396,6 @@ if (!class_exists('WC_FastSpring')):
         }
     }
 
-    $GLOBALS['wc_fastspring'] = WC_FastSpring::get_instance();
+    $GLOBALS['fssg_WC_FastSpring'] = fssg_WC_FastSpring::get_instance();
 
 endif;

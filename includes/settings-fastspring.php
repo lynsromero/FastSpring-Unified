@@ -1,10 +1,10 @@
 <?php
 if (!defined('ABSPATH')) {
-  exit;
+    exit;
 }
 
 return apply_filters(
-  'woocommerce-gateway-fastspring_settings',
+    'woocommerce-gateway-fastspring_settings',
 
   array(
     'enabled' => array(
@@ -32,9 +32,9 @@ return apply_filters(
       'title' => __('Payment Icons', 'woocommerce-gateway-fastspring'),
       'type' => 'multiselect',
       'description' => __('Select the payment method icons to show.', 'woocommerce-gateway-fastspring'),
-      'default' => array('paypal', 'visa', 'mastercard', 'amex'),
+      'default' => array( 'paypal', 'visa', 'mastercard', 'amex' ),
       'desc_tip' => false,
-      'class' => 'wc-enhanced-select',
+      'class'       => 'wc-enhanced-select',
       'options' => array(
         'paypal' => 'paypal',
         'visa' => 'visa',
@@ -54,7 +54,7 @@ return apply_filters(
       'label' => __('Enable Test Mode', 'woocommerce-gateway-fastspring'),
       'type' => 'checkbox',
       'description' => __('Places the payment gateway in test mode. In this mode, you can use the card numbers provided in the test panel of the FastSpring dashboard. Please check the documentation "<a target="_blank" href="http://docs.fastspring.com/activity-events-orders-and-subscriptions/test-orders">Testing Orders</a>" for more information.', 'woocommerce-gateway-fastspring'),
-      'default' => 'no',
+      'default' =>  'no',
       'desc_tip' => false,
     ),
     'logging' => array(
@@ -62,7 +62,7 @@ return apply_filters(
       'label' => __('Log debug messages', 'woocommerce-gateway-fastspring'),
       'type' => 'checkbox',
       'description' => __('Save debug messages to the WooCommerce System Status log.', 'woocommerce-gateway-fastspring'),
-      'default' => 'no',
+      'default' =>  'no',
     ),
     'storefront_path' => array(
       'title' => __('Storefront', 'woocommerce-gateway-fastspring'),
@@ -97,7 +97,7 @@ return apply_filters(
     'order_verification' => array(
       'title' => __('Order Verification', 'woocommerce-gateway-fastspring'),
       'type' => 'title',
-      'description' => __('In order to allow FastSpring to mark orders as completed within WooCommerce you can either use a Webhook or the FastSpring API. if you are using a hosted storefront you must use the webhook method. If, instead, you are using a popup storefront you may use either a webhook or an API call (or both). <h4>Webhook Method Instructions</h4>In order to use the webhook method, generate a secret below and enter it along with your webhook URL (<code>' . site_url('?wc-api=wc_gateway_fastspring', 'https') . '</code>) in the FastSpring dashboard under <i>Integrations > Webhooks</i> in the HMAC SHA256 Secret and URL fields respectively.<h4>API Method Instructions</h4>To use the API verification method enter your API username and password below. These can be generated from the FastSpring dashboard under <i>Integrations > API Credentials</i>.', 'woocommerce-gateway-fastspring'),
+      'description' => __('In order to allow FastSpring to mark orders as completed within WooCommerce you can either use a Webhook or the FastSpring API. if you are using a hosted storefront you must use the webhook method. If, instead, you are using a popup storefront you may use either a webhook or an API call (or both). <h4>Webhook Method Instructions</h4>In order to use the webhook method, generate a secret below and enter it along with your webhook URL (<code>' . site_url('?wc-api=fssg_WC_Gateway_FastSpring', 'https') . '</code>) in the FastSpring dashboard under <i>Integrations > Webhooks</i> in the HMAC SHA256 Secret and URL fields respectively.<h4>API Method Instructions</h4>To use the API verification method enter your API username and password below. These can be generated from the FastSpring dashboard under <i>Integrations > API Credentials</i>.', 'woocommerce-gateway-fastspring'),
     ),
     'webhook_secret' => array(
       'title' => __('Webhook Secret', 'woocommerce-gateway-fastspring'),
@@ -109,7 +109,7 @@ return apply_filters(
     'api_username' => array(
       'title' => __('API Username', 'woocommerce-gateway-fastspring'),
       'type' => 'text',
-      'description' => __('Your FastSpring API Username.', 'woocommerce-gateway-fastspring'),
+      'description' => __('Your FastSpring API username.', 'woocommerce-gateway-fastspring'),
       'desc_tip' => false,
     ),
     'api_password' => array(

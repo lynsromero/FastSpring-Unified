@@ -4,12 +4,12 @@ if (!defined('ABSPATH')) {
 }
 
 /**
- * WC_Gateway_FastSpring_Builder class.
+ * fssg_WC_Gateway_FastSpring_Builder class.
  *
- * Povides FS builder payload functionality
+ * Povides FS builder payload building functionality
  *
  */
-class WC_Gateway_FastSpring_Builder
+class fssg_WC_Gateway_FastSpring_Builder
 {
 
   /**
@@ -20,7 +20,7 @@ class WC_Gateway_FastSpring_Builder
    */
   public static function get_setting($option)
   {
-    return WC_FastSpring::get_setting($option);
+    return fssg_WC_FastSpring::get_setting($option);
   }
 
   /**
@@ -250,11 +250,26 @@ class WC_Gateway_FastSpring_Builder
    */
   public static function get_json_payload()
   {
-    return array(
+    $payload = array(
       'tags' => self::get_order_tags(),
       'contact' => self::get_cart_customer_details(),
       'items' => self::get_cart_items(),
     );
+
+    if (isset($_POST['payment_method'])) {
+      $method_map = array(
+        'fastspring_paypal' => 'paypal',
+        'fastspring_card' => 'card',
+        'fastspring_amazon' => 'amazon',
+        'fastspring_wire' => 'wire',
+        'fastspring_googlepay' => 'googlepay'
+      );
+      if (isset($method_map[$_POST['payment_method']])) {
+        $payload['paymentMethod'] = $method_map[$_POST['payment_method']];
+      }
+    }
+
+    return $payload;
   }
 
   /**
@@ -322,6 +337,6 @@ class WC_Gateway_FastSpring_Builder
    */
   public static function log($message)
   {
-    WC_FastSpring::log($message);
+    fssg_WC_FastSpring::log($message);
   }
 }
